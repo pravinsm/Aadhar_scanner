@@ -82,6 +82,25 @@
                     scanner.start(cameras[0]);
                     btn.className="changed";
                     btn.innerText="cancel";
+			
+			
+			 $('[name="options"]').on('change',function(){
+                if($(this).val()==1){
+                    if(cameras[0]!=""){
+                        scanner.start(cameras[0]);
+                    }else{
+                        alert('No Front camera found!');
+                    }
+                }else if($(this).val()==2){
+                    if(cameras[1]!=""){
+                        scanner.start(cameras[1]);
+                    }else{
+                        alert('No Back camera found!');
+                    }
+                }
+            });
+			
+			
                 } else {
                     console.error('No cameras found.');
                 }
@@ -92,7 +111,14 @@
         }
     }
     </script>
-
+<div class="btn-group btn-group-toggle mb-5" data-toggle="buttons">
+        <label class="btn btn-primary active">
+          <input type="radio" name="options" value="1" autocomplete="off" checked> Front Camera
+        </label>
+        <label class="btn btn-secondary">
+          <input type="radio" name="options" value="2" autocomplete="off"> Back Camera
+        </label>
+      </div>
    
 
 </body>
