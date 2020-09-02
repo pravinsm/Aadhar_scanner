@@ -3,8 +3,9 @@
 <html>
 
 <head>
-
-	<title>Aadhar Scanner</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+	<title>Scan Aadhar</title>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -24,9 +25,14 @@
 
   
 
-    <h1>Aadhar Scanner</h1>
+    <h1>Scan Aadhar</h1>
     <button onclick="scan_aadhar()" id="scan_btn">Click To Scan Aadhar </button>
     <video id="preview"></video>
+    <div id="cam">
+            <input type="radio"  name="options" value="1" autocomplete="off" checked> Front Camera
+            <input type="radio"  name="options" value="2" autocomplete="off"> Back Camera
+    </div>
+    
     <p id="display"></p>
 
 
@@ -36,12 +42,14 @@
 
       let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
       document.getElementById('preview').style.display="none";
+      document.getElementById('cam').style.display="none";
       let btn= document.getElementById("scan_btn");
       var details;
 
       scanner.addListener('scan', function (content) {
         details= content;
         document.getElementById('preview').style.display="none";
+        document.getElementById('cam').style.display="none";
         var xmlDoc = jQuery.parseXML(details);
         var node= jQuery(xmlDoc).find('PrintLetterBarcodeData');
         console.log(details);
@@ -71,36 +79,34 @@
       function scan_aadhar(){
         if(btn.className=="changed"){
             document.getElementById('preview').style.display="none";
+            document.getElementById('cam').style.display="none";
             btn.className= "";
             btn.innerText="Click To Scan Aadhar";
             scanner.stop();
         }
         else{
             document.getElementById('preview').style.display="block";
+            document.getElementById('cam').style.display="block";
             Instascan.Camera.getCameras().then(function (cameras) {
                 if (cameras.length > 0) {
                     scanner.start(cameras[0]);
                     btn.className="changed";
                     btn.innerText="cancel";
-			
-			
-			 $('[name="options"]').on('change',function(){
-                if($(this).val()==1){
-                    if(cameras[0]!=""){
-                        scanner.start(cameras[0]);
-                    }else{
-                        alert('No Front camera found!');
+                    $('[name="options"]').on('change',function(){
+                    if($(this).val()==1){
+                        if(cameras[0]!=""){
+                            scanner.start(cameras[0]);
+                        }else{
+                            alert('No Front camera found!');
+                        }
+                    }else if($(this).val()==2){
+                        if(cameras[1]!=""){
+                            scanner.start(cameras[1]);
+                        }else{
+                            alert('No Back camera found!');
+                        }
                     }
-                }else if($(this).val()==2){
-                    if(cameras[1]!=""){
-                        scanner.start(cameras[1]);
-                    }else{
-                        alert('No Back camera found!');
-                    }
-                }
-            });
-			
-			
+                    });
                 } else {
                     console.error('No cameras found.');
                 }
@@ -111,15 +117,6 @@
         }
     }
     </script>
-<div class="btn-group btn-group-toggle mb-5" data-toggle="buttons">
-        <label class="btn btn-primary active">
-          <input type="radio" name="options" value="1" autocomplete="off" checked> Front Camera
-        </label>
-        <label class="btn btn-secondary">
-          <input type="radio" name="options" value="2" autocomplete="off"> Back Camera
-        </label>
-      </div>
-   
 
 </body>
 
