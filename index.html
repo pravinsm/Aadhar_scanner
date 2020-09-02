@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+	<title>Scan Aadhar</title>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <style>
+        table{
+            text-align: left;
+        }
+        th,td{
+            padding: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+  
+
+    <h1>Scan Aadhar</h1>
+    <button onclick="scan_aadhar()" id="scan_btn">Click To Scan Aadhar </button>
+    <video id="preview"></video>
+    <p id="display"></p>
+
+
+
+
+    <script type="text/javascript">
+
+      let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+      document.getElementById('preview').style.display="none";
+      let btn= document.getElementById("scan_btn");
+      var details;
+
+      scanner.addListener('scan', function (content) {
+        details= content;
+        document.getElementById('preview').style.display="none";
+        var xmlDoc = jQuery.parseXML(details);
+        var node= jQuery(xmlDoc).find('PrintLetterBarcodeData');
+        console.log(details);
+        document.getElementById("display").innerHTML= `<table>
+                                                       <tr><th>Aadhar Number</th>
+                                                           <td>${node.attr("uid")}</td>
+                                                       </tr>
+                                                       <tr><th>Name</th>
+                                                           <td>${node.attr("name")}</td>
+                                                       </tr>
+                                                       <tr><th>Gender</th>
+                                                           <td>${node.attr("gender")}</td>
+                                                       </tr>
+                                                       <tr><th>DOB</th>
+                                                           <td>${node.attr("dob")}</td>
+                                                       </tr>
+                                                       <tr><th>Address</th>
+                                                           <td>${node.attr("house")}, ${node.attr("street")}, ${node.attr("po")}, ${node.attr("dist")} - ${node.attr("pc")}</td>
+                                                       </tr>
+                                                       </table>`;
+        scanner.stop(); 
+        btn.className= "";
+        btn.innerText="Click To Scan Aadhar";      
+      });
+
+
+      function scan_aadhar(){
+        if(btn.className=="changed"){
+            document.getElementById('preview').style.display="none";
+            btn.className= "";
+            btn.innerText="Click To Scan Aadhar";
+            scanner.stop();
+        }
+        else{
+            document.getElementById('preview').style.display="block";
+            Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                    scanner.start(cameras[0]);
+                    btn.className="changed";
+                    btn.innerText="cancel";
+                } else {
+                    console.error('No cameras found.');
+                }
+            }).catch(function (e) {
+                console.error(e);
+            });
+            
+        }
+    }
+    </script>
+
+   
+
+</body>
+
+</html>
